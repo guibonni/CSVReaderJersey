@@ -7,11 +7,16 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
+import br.com.csvreader.model.School;
+import br.com.csvreader.util.CSVReader;
 
 @Path("/readFile")
 public class ReadFileServlet {
@@ -20,11 +25,44 @@ public class ReadFileServlet {
 	@Path("/getFile")
 	@Produces("application/json")
 	public Response getFile() {
-		// return "O arquivo foi lido com sucesso.";
-		return Response.status(200).entity(saveFile()).build();
+		CSVReader reader = new CSVReader();
+		String file = "Documentos/Faculdade/SD/CSVReaderProject/arquivo_dados.csv";
+		
+		if (reader.fileExists(file)) {
+			List<List<String>> fileData = reader.readFile(file);
+			List<School> schoolsList = new ArrayList<School>();
+			
+			for (List<String> linha : fileData) {
+				try {
+					School school = new School();
+					
+					school.setID(Integer.parseInt(linha.get(0)));
+					school.setSchoolCode(linha.get(1));
+					school.setSchoolName(linha.get(2));
+					school.setAddress(linha.get(3));
+					school.setCity(linha.get(4));
+					school.setStateCode(linha.get(5));
+					school.setZipCode(linha.get(6));
+					// school.setProvince(linha.get(7));
+					// school.setCountry(linha.get(8));
+					// school.setPostalCode(linha.get(9));
+					
+					schoolsList.add(school);
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			String resposta = "{" + schoolsList.get(0).toJson() + "," + schoolsList.get(1).toJson() + "}";
+			
+			// return Response.status(200).entity(saveFile(schoolsList)).build();
+			return Response.status(200).entity(resposta).build();
+		} else {
+			return Response.status(200).entity("Arquivo não encontrado").build();
+		}
 	}
 	
-	private static String saveFile() {
+	private static String saveFile(List<School> schools) {
 		String erro = "";
 		
 		try {
