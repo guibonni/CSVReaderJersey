@@ -93,7 +93,7 @@ public class School {
 		this.postalCode = postalCode;
 	}
 	
-	/*public String toJson() {
+	public String toJson() {
 		String json = "";
 		
 		json += "{";
@@ -110,23 +110,23 @@ public class School {
 		json += "}";
 		
 		return json;
-	}*/
-	public String toJson() {
-		String json = "";
+	}
+	
+	@Override
+	public String toString() {
+		String text = "";
 		
-		json += "{";
-		json += "ID:" + this.ID + ",";
-		json += "schoolCode:" + this.schoolCode + ",";
-		json += "schoolName:" + this.schoolName + ",";
-		json += "address:" + this.address + ",";
-		json += "city:" + this.city + ",";
-		json += "stateCode:" + this.stateCode + ",";
-		json += "zipCode:" + this.zipCode + ",";
-		json += "province:" + this.province + ",";
-		json += "country:" + this.country + ",";
-		json += "postalCode:" + this.postalCode + "";
-		json += "}";
+		text += this.ID;
+		text += "#" + this.schoolCode;
+		text += "#" + this.schoolName;
+		text += "#" + this.address;
+		text += "#" + this.city;
+		text += "#" + this.stateCode;
+		text += "#" + this.zipCode;
+		text += "#" + this.province;
+		text += "#" + this.country;
+		text += "#" + this.postalCode;
 		
-		return json;
+		return text;
 	}
 }

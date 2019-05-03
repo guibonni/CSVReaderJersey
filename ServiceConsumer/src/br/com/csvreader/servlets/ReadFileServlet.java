@@ -1,13 +1,10 @@
 package br.com.csvreader.servlets;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -23,47 +20,50 @@ public class ReadFileServlet {
 	
 	@GET // http://localhost:8080/ServiceConsumer/rest/readFile/getFile
 	@Path("/getFile")
-	@Produces("application/json")
+	@Produces("text/plain")
 	public Response getFile() {
 		CSVReader reader = new CSVReader();
 		String file = "Documentos/Faculdade/SD/CSVReaderProject/arquivo_dados.csv";
 		
 		if (reader.fileExists(file)) {
 			List<List<String>> fileData = reader.readFile(file);
-			List<School> schoolsList = new ArrayList<School>();
+			
+			int sucessos = 0;
+			int falhas = 0;
 			
 			for (List<String> linha : fileData) {
 				try {
 					School school = new School();
 					
-					school.setID(Integer.parseInt(linha.get(0)));
-					school.setSchoolCode(linha.get(1));
-					school.setSchoolName(linha.get(2));
-					school.setAddress(linha.get(3));
-					school.setCity(linha.get(4));
-					school.setStateCode(linha.get(5));
-					school.setZipCode(linha.get(6));
-					// school.setProvince(linha.get(7));
-					// school.setCountry(linha.get(8));
-					// school.setPostalCode(linha.get(9));
+					school.setID(Integer.parseInt(linha.size() > 0 ? linha.get(0) : "0"));
+					school.setSchoolCode(linha.size() > 1 ? linha.get(1) : "");
+					school.setSchoolName(linha.size() > 2 ? linha.get(2) : "");
+					school.setAddress(linha.size() > 3 ? linha.get(3) : "");
+					school.setCity(linha.size() > 4 ? linha.get(4) : "");
+					school.setStateCode(linha.size() > 5 ? linha.get(5) : "");
+					school.setZipCode(linha.size() > 6 ? linha.get(6) : "");
+					school.setProvince(linha.size() > 7 ? linha.get(7) : "");
+					school.setCountry(linha.size() > 8 ? linha.get(8) : "");
+					school.setPostalCode(linha.size() > 9 ? linha.get(9) : "");
 					
-					schoolsList.add(school);
+					if (saveFile(school)) {
+						sucessos++;
+					} else {
+						falhas++;
+					}
 				} catch (NumberFormatException e) {
-					e.printStackTrace();
+					falhas++;
 				}
 			}
 			
-			String resposta = "{" + schoolsList.get(0).toJson() + "," + schoolsList.get(1).toJson() + "}";
-			
-			// return Response.status(200).entity(saveFile(schoolsList)).build();
-			return Response.status(200).entity(resposta).build();
+			return Response.status(200).entity("Leitura do arquivo finalizada. Sucessos: " + String.valueOf(sucessos) + ", Falhas: " + String.valueOf(falhas)).build();
 		} else {
 			return Response.status(200).entity("Arquivo não encontrado").build();
 		}
 	}
 	
-	private static String saveFile(List<School> schools) {
-		String erro = "";
+	private static boolean saveFile(School school) {
+		boolean sucesso;
 		
 		try {
 			URL url = new URL("http://localhost:8080/ServiceConsumer/rest/database/");
@@ -73,40 +73,28 @@ public class ReadFileServlet {
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
 			
-			String input = "{\"codigo\":2,\"nome\":\"Guilherme\"}";
+			String input = school.toJson();
 			
 			OutputStream os = conn.getOutputStream();
 			os.write(input.getBytes());
 			os.flush();
 			
 			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-				throw new RuntimeException("Failed. HTTP error code: " + conn.getResponseCode());
-			}
-			
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-			
-			String output;
-			String response = "";
-			
-			while ((output = br.readLine()) != null) {
-				response += output;
+				sucesso = false;
+			} else {
+				sucesso = true;
 			}
 			
 			conn.disconnect();
-			
-			return response;
 		} catch (MalformedURLException e) {
-			erro = "MalformedURLException: " + e.getMessage();
-			e.printStackTrace();
+			sucesso = false;
 		} catch (IOException e) {
-			erro = "IOException: " + e.getMessage();
-			e.printStackTrace();
+			sucesso = false;
 		} catch (RuntimeException e) {
-			erro = "RuntimeException: " + e.getMessage();
-			e.printStackTrace();
+			sucesso = false;
 		}
 		
-		return erro;
+		return sucesso;
 	}
 
 }
