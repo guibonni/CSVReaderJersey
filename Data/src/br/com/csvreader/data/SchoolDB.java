@@ -25,7 +25,7 @@ public class SchoolDB {
 			PreparedStatement stmt = this.connection
 					.prepareStatement("insert into school (id, code, name, address, city, state, zip, province, country, postal) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-			stmt.setString(1, String.valueOf(s.getID()));
+			stmt.setString(1, String.valueOf(s.getId()));
 			stmt.setString(2, s.getSchoolCode());
 			stmt.setString(3, s.getSchoolName());
 			stmt.setString(4, s.getAddress());
@@ -57,7 +57,7 @@ public class SchoolDB {
 			while (rs.next()) {
 				School school = new School();
 				
-				school.setID(rs.getInt("id"));
+				school.setId(rs.getInt("id"));
 				school.setSchoolCode(rs.getString("code"));
 				school.setSchoolName(rs.getString("name"));
 				school.setAddress(rs.getString("address"));

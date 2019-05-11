@@ -2,7 +2,7 @@ package br.com.csvreader.model;
 
 public class School {
 	
-	private int ID;
+	private int id;
 	private String schoolCode;
 	private String schoolName;
 	private String address;
@@ -13,12 +13,12 @@ public class School {
 	private String country;
 	private String postalCode;
 	
-	public int getID() {
-		return ID;
+	public int getId() {
+		return id;
 	}
 	
-	public void setID(int iD) {
-		ID = iD;
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public String getSchoolCode() {
@@ -97,7 +97,7 @@ public class School {
 		String json = "";
 		
 		json += "{";
-		json += "\"ID\":" + this.ID + ",";
+		json += "\"id\":" + this.id + ",";
 		json += "\"schoolCode\":\"" + this.schoolCode + "\",";
 		json += "\"schoolName\":\"" + this.schoolName + "\",";
 		json += "\"address\":\"" + this.address + "\",";
@@ -116,7 +116,7 @@ public class School {
 	public String toString() {
 		String text = "";
 		
-		text += this.ID;
+		text += this.id;
 		text += "#" + this.schoolCode;
 		text += "#" + this.schoolName;
 		text += "#" + this.address;

@@ -35,7 +35,7 @@ public class ReadFileServlet {
 				try {
 					School school = new School();
 					
-					school.setID(Integer.parseInt(linha.size() > 0 ? linha.get(0) : "0"));
+					school.setId(linha.size() > 0 ? Integer.parseInt(linha.get(0)) : 0);
 					school.setSchoolCode(linha.size() > 1 ? linha.get(1) : "");
 					school.setSchoolName(linha.size() > 2 ? linha.get(2) : "");
 					school.setAddress(linha.size() > 3 ? linha.get(3) : "");

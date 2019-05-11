@@ -41,7 +41,3 @@ Pega as informações de um arquivo CSV e as salva no banco de dados
 ```
 http://localhost:8080/ServiceConsumer/rest/readFile/getFile
 ```
-
-## Problemas conhecidos
-
-A conexão com o banco de dados não está funcionando
