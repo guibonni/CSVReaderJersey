@@ -1,12 +1,18 @@
 package br.com.csvreader.controller;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,32 +23,34 @@ import br.com.csvreader.util.CSVReader;
 @RestController
 public class FileController {
 	
-	// http://localhost:8080/api/all
+	// http://localhost:8080/api/readfile
 	@GetMapping("api/readfile")
 	public String all(){
-		CSVReader reader = new CSVReader();
-		String file = "Documentos/Faculdade/SD/CSVReaderProject/arquivo_dados.csv";
 		
-		if (reader.fileExists(file)) {
-			List<List<String>> fileData = reader.readFile(file);
-			
+		try {
 			int sucessos = 0;
 			int falhas = 0;
 			
-			for (List<String> linha : fileData) {
+			String file = "/home/gui/Documentos/Faculdade/SD/CSVReaderProject/arquivo_dados.csv";
+			
+			Reader in = new FileReader(file);
+			
+			Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(in);
+			
+			for (CSVRecord record : records) {
 				try {
 					School school = new School();
 					
-					school.setId(linha.size() > 0 ? Integer.parseInt(linha.get(0)) : 0);
-					school.setSchoolCode(linha.size() > 1 ? linha.get(1) : "");
-					school.setSchoolName(linha.size() > 2 ? linha.get(2) : "");
-					school.setAddress(linha.size() > 3 ? linha.get(3) : "");
-					school.setCity(linha.size() > 4 ? linha.get(4) : "");
-					school.setStateCode(linha.size() > 5 ? linha.get(5) : "");
-					school.setZipCode(linha.size() > 6 ? linha.get(6) : "");
-					school.setProvince(linha.size() > 7 ? linha.get(7) : "");
-					school.setCountry(linha.size() > 8 ? linha.get(8) : "");
-					school.setPostalCode(linha.size() > 9 ? linha.get(9) : "");
+					school.setId(Integer.parseInt(record.get("ID")));
+					school.setSchoolCode(record.get("SchoolCode"));
+					school.setSchoolName(record.get("SchoolName"));
+					school.setAddress(record.get("Address"));
+					school.setCity(record.get("City"));
+					school.setStateCode(record.get("StateCode"));
+					school.setZipCode(record.get("ZipCode"));
+					school.setProvince(record.get("Province"));
+					school.setCountry(record.get("Country"));
+					school.setPostalCode(record.get("PostalCode"));
 					
 					if (saveFile(school)) {
 						sucessos++;
@@ -54,11 +62,13 @@ public class FileController {
 				}
 			}
 			
-			//return Response.status(200).entity("Leitura do arquivo finalizada. Sucessos: " + String.valueOf(sucessos) + ", Falhas: " + String.valueOf(falhas)).build();
 			return "Leitura do arquivo finalizada. Sucessos: " + String.valueOf(sucessos) + ", Falhas: " + String.valueOf(falhas);
-		} else {
-			// return Response.status(200).entity("Arquivo não encontrado").build();
+		} catch(FileNotFoundException e) {
 			return "Arquivo não encontrado";
+		} catch(IOException e) {
+			return "Falha ao ler o arquivo";
+		} catch (Exception e) {
+			return "Erro desconhecido";
 		}
 	}
 	
@@ -79,7 +89,7 @@ public class FileController {
 			os.write(input.getBytes());
 			os.flush();
 			
-			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+			if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				sucesso = false;
 			} else {
 				sucesso = true;

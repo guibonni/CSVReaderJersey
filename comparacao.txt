@@ -1,0 +1,13 @@
+Comparação entre as duas APIs
+
+Projeto em Jersey
+- Leu: 359 linhas
+- Tempo: 63383 ms
+- Sucessos: 333
+- Falhas: 26
+
+Projeto em SpringBoot
+- Leu: 358 linhas
+- Tempo: 20817 ms
+- Sucessos: 358
+- Falhas: 0

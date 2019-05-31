@@ -22,6 +22,8 @@ public class ReadFileServlet {
 	@Path("/getFile")
 	@Produces("text/plain")
 	public Response getFile() {
+		long tempoInicial = System.currentTimeMillis();
+		
 		CSVReader reader = new CSVReader();
 		String file = "Documentos/Faculdade/SD/CSVReaderProject/arquivo_dados.csv";
 		
@@ -56,6 +58,7 @@ public class ReadFileServlet {
 				}
 			}
 			
+			System.out.println("o metodo executou em " + (System.currentTimeMillis() - tempoInicial));
 			return Response.status(200).entity("Leitura do arquivo finalizada. Sucessos: " + String.valueOf(sucessos) + ", Falhas: " + String.valueOf(falhas)).build();
 		} else {
 			return Response.status(200).entity("Arquivo não encontrado").build();

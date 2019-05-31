@@ -25,7 +25,7 @@ public class SchoolController {
 		return repository.save(school);
 	}
 	
-	// http://localhost:8080/api/all
+	// http://localhost:8080/api/database/all
 	@GetMapping("api/database/all")
 	public List<School> all(){
 		return (List<School>) repository.findAll();
